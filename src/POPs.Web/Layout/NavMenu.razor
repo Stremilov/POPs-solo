@@ -1,0 +1,45 @@
+﻿@inject AuthState Auth
+@implements IDisposable
+
+<div class="brand-row">
+    <a class="brand" href="">
+        <span class="brand-mark">П</span>
+        <span>
+            <strong>Контингент</strong>
+            <small>учёт студентов</small>
+        </span>
+    </a>
+    <button title="Меню" class="nav-toggle" @onclick="ToggleNavMenu">☰</button>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="side-nav">
+        <NavLink class="side-link" href="" Match="NavLinkMatch.All">Главная</NavLink>
+
+        @if (Auth.IsAdmin)
+        {
+            <NavLink class="side-link" href="students">Студенты</NavLink>
+            <NavLink class="side-link" href="groups">Группы</NavLink>
+            <NavLink class="side-link" href="courses">Курсы</NavLink>
+            <NavLink class="side-link" href="reports">Отчёты</NavLink>
+        }
+        else if (Auth.IsStudent)
+        {
+            <NavLink class="side-link" href="profile">Мои данные</NavLink>
+        }
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override void OnInitialized()
+    {
+        Auth.OnChange += StateHasChanged;
+    }
+
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+
+    public void Dispose() => Auth.OnChange -= StateHasChanged;
+}

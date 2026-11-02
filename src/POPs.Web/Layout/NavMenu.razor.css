@@ -1,0 +1,80 @@
+.brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 16px 16px 8px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #f0dfcb;
+}
+
+.brand strong,
+.brand small {
+    display: block;
+    line-height: 1.15;
+}
+
+.brand small {
+    color: #e4d6c6;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    color: #21130f;
+    font-weight: 800;
+    background: linear-gradient(145deg, #ff9a45, #cc0a0d);
+    box-shadow: 0 8px 18px rgba(248, 127, 35, 0.4);
+}
+
+.nav-toggle {
+    border: 0;
+    background: rgba(240, 223, 203, 0.1);
+    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    color: #f0dfcb;
+}
+
+.side-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 12px 18px;
+}
+
+.side-nav ::deep a.side-link {
+    display: block;
+    padding: 11px 14px;
+    border-radius: 16px;
+    color: #e4d6c6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.side-nav ::deep a.side-link:hover {
+    background: rgba(248, 127, 35, 0.12);
+    color: #f0dfcb;
+}
+
+.side-nav ::deep a.side-link.active {
+    background: linear-gradient(135deg, #f87f23, #cc0a0d);
+    color: #f0dfcb;
+    box-shadow: 0 10px 22px rgba(248, 127, 35, 0.32);
+}
+
+@media (min-width: 641px) {
+    .nav-toggle { display: none; }
+    .collapse { display: block; }
+}
