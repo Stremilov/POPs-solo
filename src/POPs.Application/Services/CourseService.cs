@@ -1,35 +1,35 @@
-using Microsoft.EntityFrameworkCore;
-using POPs.Api.Data;
+using POPs.Application.Repositories;
 using POPs.Shared.Dtos;
 using POPs.Shared.Models;
 
-namespace POPs.Api.Services;
+namespace POPs.Application.Services;
 
 /// <summary>
 /// Сервис управления курсами.
 /// </summary>
 public class CourseService
 {
-    private readonly AppDbContext _db;
+    private readonly ICourseRepository _courses;
+    private readonly IGroupRepository _groups;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CourseService(AppDbContext db)
+    public CourseService(ICourseRepository courses, IGroupRepository groups, IUnitOfWork unitOfWork)
     {
-        _db = db;
+        _courses = courses;
+        _groups = groups;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<List<CourseDto>> GetAllAsync()
     {
-        var courses = await _db.Courses
-            .Include(c => c.Groups)
-            .OrderBy(c => c.Number)
-            .ToListAsync();
+        var courses = await _courses.GetAllAsync();
 
         return courses.Select(ToDto).ToList();
     }
 
     public async Task<CourseDto?> GetByIdAsync(int id)
     {
-        var course = await _db.Courses.Include(c => c.Groups).FirstOrDefaultAsync(c => c.Id == id);
+        var course = await _courses.GetByIdAsync(id);
         return course == null ? null : ToDto(course);
     }
 
@@ -43,14 +43,14 @@ public class CourseService
             EndYear = request.EndYear
         };
 
-        _db.Courses.Add(course);
-        await _db.SaveChangesAsync();
+        _courses.Add(course);
+        await _unitOfWork.SaveChangesAsync();
         return ToDto(course);
     }
 
     public async Task<CourseDto?> EditCourseAsync(CourseUpdateRequest request)
     {
-        var course = await _db.Courses.Include(c => c.Groups).FirstOrDefaultAsync(c => c.Id == request.Id);
+        var course = await _courses.GetByIdAsync(request.Id);
         if (course == null)
         {
             return null;
@@ -61,23 +61,23 @@ public class CourseService
         course.StartYear = request.StartYear;
         course.EndYear = request.EndYear;
 
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return ToDto(course);
     }
 
     public async Task AddGroupToCourseAsync(int groupId, int courseId)
     {
-        var group = await _db.Groups.FindAsync(groupId)
+        var group = await _groups.GetByIdAsync(groupId)
             ?? throw new InvalidOperationException("Группа не найдена.");
 
-        var courseExists = await _db.Courses.AnyAsync(c => c.Id == courseId);
+        var courseExists = await _courses.ExistsAsync(courseId);
         if (!courseExists)
         {
             throw new InvalidOperationException("Курс не найден.");
         }
 
         group.CourseId = courseId;
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     /// <summary>
@@ -86,10 +86,7 @@ public class CourseService
     /// </summary>
     public async Task<string> PromoteStudentsAsync(int courseId)
     {
-        var course = await _db.Courses
-            .Include(c => c.Groups)
-            .ThenInclude(g => g.Students)
-            .FirstOrDefaultAsync(c => c.Id == courseId);
+        var course = await _courses.GetByIdAsync(courseId, includeStudents: true);
 
         if (course == null)
         {
@@ -97,7 +94,7 @@ public class CourseService
         }
 
         var nextNumber = course.Number + 1;
-        var nextCourse = await _db.Courses.FirstOrDefaultAsync(c => c.Number == nextNumber);
+        var nextCourse = await _courses.GetByNumberAsync(nextNumber);
 
         if (nextCourse == null)
         {
@@ -108,8 +105,8 @@ public class CourseService
                 StartYear = course.StartYear + 1,
                 EndYear = course.EndYear + 1
             };
-            _db.Courses.Add(nextCourse);
-            await _db.SaveChangesAsync();
+            _courses.Add(nextCourse);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         var movedGroups = 0;
@@ -122,7 +119,7 @@ public class CourseService
             movedStudents += group.Students.Count(s => s.Status == "Обучается");
         }
 
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return $"Переведено групп: {movedGroups}, студентов (обучаются): {movedStudents} на курс «{nextCourse.Name}».";
     }
 

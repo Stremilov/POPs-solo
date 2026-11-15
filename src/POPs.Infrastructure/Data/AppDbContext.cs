@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using POPs.Shared.Models;
 
-namespace POPs.Api.Data;
+namespace POPs.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {

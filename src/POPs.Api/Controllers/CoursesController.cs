@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using POPs.Api.Services;
+using POPs.Application.Services;
 using POPs.Shared.Dtos;
 
 namespace POPs.Api.Controllers;

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using POPs.Api.Data;
-using POPs.Api.Services;
+using POPs.Application.Repositories;
+using POPs.Application.Services;
+using POPs.Infrastructure.Data;
+using POPs.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,11 @@ builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<IAdministratorRepository, AdministratorRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // CORS — чтобы Blazor (фронт) мог ходить в API
 builder.Services.AddCors(options =>

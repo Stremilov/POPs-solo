@@ -1,28 +1,27 @@
-using Microsoft.EntityFrameworkCore;
-using POPs.Api.Data;
+using POPs.Application.Repositories;
 using POPs.Shared.Dtos;
 
-namespace POPs.Api.Services;
+namespace POPs.Application.Services;
 
 /// <summary>
 /// Сервис отчётности (по диаграмме активности).
 /// </summary>
 public class ReportService
 {
-    private readonly AppDbContext _db;
+    private readonly IStudentRepository _students;
+    private readonly IGroupRepository _groups;
+    private readonly ICourseRepository _courses;
 
-    public ReportService(AppDbContext db)
+    public ReportService(IStudentRepository students, IGroupRepository groups, ICourseRepository courses)
     {
-        _db = db;
+        _students = students;
+        _groups = groups;
+        _courses = courses;
     }
 
     public async Task<List<ContingentItemDto>> GetContingentAsync()
     {
-        var students = await _db.Students
-            .Include(s => s.Group)!
-            .ThenInclude(g => g!.Course)
-            .OrderBy(s => s.FullName)
-            .ToListAsync();
+        var students = await _students.GetContingentAsync();
 
         return students.Select(s => new ContingentItemDto
         {
@@ -36,19 +35,17 @@ public class ReportService
 
     public async Task<int> CountByStatusAsync(string status)
     {
-        return await _db.Students.CountAsync(s => s.Status == status);
+        return await _students.CountByStatusAsync(status);
     }
 
     public async Task<int> CountByGroupAsync(int groupId)
     {
-        return await _db.Students.CountAsync(s => s.GroupId == groupId);
+        return await _students.CountByGroupAsync(groupId);
     }
 
     public async Task<int> CountByCourseAsync(int courseId)
     {
-        return await _db.Students
-            .Include(s => s.Group)
-            .CountAsync(s => s.Group != null && s.Group.CourseId == courseId);
+        return await _students.CountByCourseAsync(courseId);
     }
 
     /// <summary>
@@ -57,10 +54,7 @@ public class ReportService
     /// </summary>
     public async Task<GroupReportDto?> GetGroupStatisticsAsync(int groupId)
     {
-        var group = await _db.Groups
-            .Include(g => g.Course)
-            .Include(g => g.Students)
-            .FirstOrDefaultAsync(g => g.Id == groupId);
+        var group = await _groups.GetByIdAsync(groupId, includeDetails: true);
 
         if (group == null)
         {
@@ -118,10 +112,7 @@ public class ReportService
 
     public async Task<CourseStatisticsDto?> GetCourseStatisticsAsync(int courseId)
     {
-        var course = await _db.Courses
-            .Include(c => c.Groups)
-            .ThenInclude(g => g.Students)
-            .FirstOrDefaultAsync(c => c.Id == courseId);
+        var course = await _courses.GetByIdAsync(courseId, includeStudents: true);
 
         if (course == null)
         {
@@ -145,7 +136,7 @@ public class ReportService
 
     public async Task<OverviewStatisticsDto> GetOverviewAsync()
     {
-        var students = await _db.Students.ToListAsync();
+        var students = await _students.GetForOverviewAsync();
         var byStatus = students
             .GroupBy(s => s.Status)
             .ToDictionary(g => g.Key, g => g.Count());
@@ -153,8 +144,8 @@ public class ReportService
         return new OverviewStatisticsDto
         {
             TotalStudents = students.Count,
-            TotalGroups = await _db.Groups.CountAsync(),
-            TotalCourses = await _db.Courses.CountAsync(),
+            TotalGroups = await _groups.CountAsync(),
+            TotalCourses = await _courses.CountAsync(),
             ByStatus = byStatus
         };
     }

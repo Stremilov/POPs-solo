@@ -1,65 +1,53 @@
-using Microsoft.EntityFrameworkCore;
-using POPs.Api.Data;
+using POPs.Application.Repositories;
 using POPs.Shared.Dtos;
 using POPs.Shared.Models;
 
-namespace POPs.Api.Services;
+namespace POPs.Application.Services;
 
 /// <summary>
 /// Сервис управления студентами (по диаграмме классов).
 /// </summary>
 public class StudentService
 {
-    private readonly AppDbContext _db;
+    private readonly IStudentRepository _students;
+    private readonly IGroupRepository _groups;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public StudentService(AppDbContext db)
+    public StudentService(IStudentRepository students, IGroupRepository groups, IUnitOfWork unitOfWork)
     {
-        _db = db;
+        _students = students;
+        _groups = groups;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<List<StudentDto>> GetAllAsync(string? search = null)
     {
-        var query = _db.Students.Include(s => s.Group).AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            search = search.Trim().ToLower();
-            query = query.Where(s =>
-                s.FullName.ToLower().Contains(search) ||
-                s.Email.ToLower().Contains(search) ||
-                s.Status.ToLower().Contains(search));
-        }
-
-        var list = await query.OrderBy(s => s.FullName).ToListAsync();
+        var list = await _students.GetAllAsync(search);
         return list.Select(ToDto).ToList();
     }
 
     public async Task<StudentDto?> FindStudentAsync(int id)
     {
-        var student = await _db.Students.Include(s => s.Group).FirstOrDefaultAsync(s => s.Id == id);
+        var student = await _students.GetByIdAsync(id, includeGroup: true);
         return student == null ? null : ToDto(student);
     }
 
     public async Task<List<StudentDto>> GetStudentsByGroupAsync(int groupId)
     {
-        var list = await _db.Students
-            .Include(s => s.Group)
-            .Where(s => s.GroupId == groupId)
-            .OrderBy(s => s.FullName)
-            .ToListAsync();
+        var list = await _students.GetByGroupAsync(groupId);
 
         return list.Select(ToDto).ToList();
     }
 
     public async Task<StudentDto> AddStudentAsync(StudentCreateRequest request)
     {
-        var groupExists = await _db.Groups.AnyAsync(g => g.Id == request.GroupId);
+        var groupExists = await _groups.ExistsAsync(request.GroupId);
         if (!groupExists)
         {
             throw new InvalidOperationException("Группа не найдена.");
         }
 
-        if (await _db.Students.AnyAsync(s => s.Login == request.Login))
+        if (await _students.LoginExistsAsync(request.Login))
         {
             throw new InvalidOperationException("Логин уже занят.");
         }
@@ -80,22 +68,22 @@ public class StudentService
                 string.IsNullOrWhiteSpace(request.Password) ? "student" : request.Password)
         };
 
-        _db.Students.Add(student);
-        await _db.SaveChangesAsync();
+        _students.Add(student);
+        await _unitOfWork.SaveChangesAsync();
 
-        await _db.Entry(student).Reference(s => s.Group).LoadAsync();
+        await _students.LoadGroupAsync(student);
         return ToDto(student);
     }
 
     public async Task<StudentDto?> EditStudentAsync(StudentUpdateRequest request)
     {
-        var student = await _db.Students.FindAsync(request.Id);
+        var student = await _students.GetByIdAsync(request.Id);
         if (student == null)
         {
             return null;
         }
 
-        var groupExists = await _db.Groups.AnyAsync(g => g.Id == request.GroupId);
+        var groupExists = await _groups.ExistsAsync(request.GroupId);
         if (!groupExists)
         {
             throw new InvalidOperationException("Группа не найдена.");
@@ -111,27 +99,27 @@ public class StudentService
         student.PreviousEducation = request.PreviousEducation;
         student.GraduationYear = request.GraduationYear;
 
-        await _db.SaveChangesAsync();
-        await _db.Entry(student).Reference(s => s.Group).LoadAsync();
+        await _unitOfWork.SaveChangesAsync();
+        await _students.LoadGroupAsync(student);
         return ToDto(student);
     }
 
     public async Task<bool> DeleteStudentAsync(int id)
     {
-        var student = await _db.Students.FindAsync(id);
+        var student = await _students.GetByIdAsync(id);
         if (student == null)
         {
             return false;
         }
 
-        _db.Students.Remove(student);
-        await _db.SaveChangesAsync();
+        _students.Remove(student);
+        await _unitOfWork.SaveChangesAsync();
         return true;
     }
 
     public async Task<StudentDto?> ExpelStudentAsync(int id, string reason)
     {
-        var student = await _db.Students.Include(s => s.Group).FirstOrDefaultAsync(s => s.Id == id);
+        var student = await _students.GetByIdAsync(id, includeGroup: true);
         if (student == null)
         {
             return null;
@@ -141,13 +129,13 @@ public class StudentService
             ? "Отчислен"
             : $"Отчислен ({reason})";
 
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return ToDto(student);
     }
 
     public async Task<StudentDto?> UpdatePersonalDataAsync(int studentId, PersonalDataRequest request)
     {
-        var student = await _db.Students.Include(s => s.Group).FirstOrDefaultAsync(s => s.Id == studentId);
+        var student = await _students.GetByIdAsync(studentId, includeGroup: true);
         if (student == null)
         {
             return null;
@@ -161,7 +149,7 @@ public class StudentService
         student.PreviousEducation = request.PreviousEducation;
         student.GraduationYear = request.GraduationYear;
 
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return ToDto(student);
     }
 

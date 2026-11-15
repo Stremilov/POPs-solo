@@ -1,26 +1,27 @@
-using Microsoft.EntityFrameworkCore;
-using POPs.Api.Data;
+using POPs.Application.Repositories;
 using POPs.Shared.Dtos;
 
-namespace POPs.Api.Services;
+namespace POPs.Application.Services;
 
 /// <summary>
 /// Простая аутентификация администратора и студента.
 /// </summary>
 public class AuthService
 {
-    private readonly AppDbContext _db;
+    private readonly IAdministratorRepository _administrators;
+    private readonly IStudentRepository _students;
 
-    public AuthService(AppDbContext db)
+    public AuthService(IAdministratorRepository administrators, IStudentRepository students)
     {
-        _db = db;
+        _administrators = administrators;
+        _students = students;
     }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
         var login = request.Login.Trim();
 
-        var admin = await _db.Administrators.FirstOrDefaultAsync(a => a.Login == login);
+        var admin = await _administrators.GetByLoginAsync(login);
         if (admin != null)
         {
             if (!BCrypt.Net.BCrypt.Verify(request.Password, admin.PasswordHash))
@@ -39,7 +40,7 @@ public class AuthService
             };
         }
 
-        var student = await _db.Students.FirstOrDefaultAsync(s => s.Login == login);
+        var student = await _students.GetByLoginAsync(login);
         if (student != null)
         {
             if (!BCrypt.Net.BCrypt.Verify(request.Password, student.PasswordHash))

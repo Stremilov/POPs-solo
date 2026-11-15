@@ -1,6 +1,6 @@
 using POPs.Shared.Models;
 
-namespace POPs.Api.Data;
+namespace POPs.Infrastructure.Data;
 
 /// <summary>
 /// Заполняет БД демо-данными при первом запуске.
