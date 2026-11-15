@@ -94,6 +94,8 @@
 
 ## Архитектура и подходы
 
+По схеме из методички проект `.API` содержит контроллеры, `.Domain` — модели, а `.Infrastructure` — работу с БД. В примере репозитория каталог `Repository/PersonRepository.cs` также показан внутри `.Infrastructure`, рядом с `Data/Context.cs` и `Migrations`. В этом решении им соответствуют `POPs.Api/Controllers`, `POPs.Shared/Models` и `POPs.Infrastructure/{Data,Repositories}`. Дополнительный `POPs.Application` хранит бизнес-сервисы и интерфейсы репозиториев, а `POPs.Web` — клиентский интерфейс.
+
 | Подход | Как применяется в проекте |
 | --- | --- |
 | **Клиент-серверная архитектура** | `POPs.Web` работает в браузере как Blazor WebAssembly-приложение и обращается к отдельному `POPs.Api` по HTTP. |

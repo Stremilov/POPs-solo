@@ -2,99 +2,59 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 14px;
+    gap: 15px;
+    padding: 15px;
 }
-
 .app-main {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 15px;
 }
-
-.glass-nav {
-    border-radius: 28px;
-    background: linear-gradient(180deg, rgba(240, 223, 203, 0.08), rgba(33, 19, 15, 0.72));
-    backdrop-filter: blur(28px) saturate(1.4);
-    -webkit-backdrop-filter: blur(28px) saturate(1.4);
-    border: 1px solid rgba(240, 223, 203, 0.12);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(240, 223, 203, 0.08);
+.glass-nav, .glass-topbar {
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.48);
+    backdrop-filter: blur(26px) saturate(1.15);
+    -webkit-backdrop-filter: blur(26px) saturate(1.15);
+    box-shadow: 0 16px 40px rgba(55, 64, 76, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
-
+.glass-nav { border-radius: 27px; }
 .glass-topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    min-height: 64px;
+    min-height: 65px;
     padding: 10px 18px;
-    border-radius: 22px;
-    background: linear-gradient(180deg, rgba(240, 223, 203, 0.1), rgba(33, 19, 15, 0.55));
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(240, 223, 203, 0.12);
+    border-radius: 21px;
 }
-
-.user-chip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-}
-
-.user-chip strong,
-.user-chip small {
-    display: block;
-    line-height: 1.2;
-    color: #f0dfcb;
-}
-
-.user-chip small {
-    color: #e4d6c6;
-    font-size: 0.78rem;
-}
-
+.user-chip { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.user-chip strong, .user-chip small { display: block; line-height: 1.2; color: #242a32; }
+.user-chip small { color: #68727d; font-size: 0.78rem; margin-top: 2px; }
 .user-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    color: #21130f;
-    background: linear-gradient(145deg, #f87f23, #cc0a0d);
-    box-shadow: 0 6px 16px rgba(248, 127, 35, 0.4);
+    width: 38px; height: 38px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-weight: 700; color: #fff;
+    background: rgba(48, 56, 66, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
-
 .content {
     flex: 1;
-    padding: 22px 24px 28px;
-    border-radius: 28px;
-    background: linear-gradient(180deg, rgba(240, 223, 203, 0.07), rgba(33, 19, 15, 0.55));
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(240, 223, 203, 0.1);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(240, 223, 203, 0.08);
+    padding: 26px 28px 32px;
+    border-radius: 27px;
+    background: rgba(255, 255, 255, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.56);
+    box-shadow: 0 14px 42px rgba(55, 64, 76, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.68);
 }
-
-@media (max-width: 640.98px) {
+@media (max-width: 900.98px) {
     .app-shell { padding: 10px; }
-    .content { padding: 16px; }
+    .content { padding: 18px; }
 }
-
-@media (min-width: 641px) {
-    .app-shell {
-        flex-direction: row;
-        align-items: stretch;
-        padding: 18px;
-        gap: 16px;
-    }
-
-    .glass-nav {
-        width: 248px;
-        position: sticky;
-        top: 18px;
-        height: calc(100vh - 36px);
-        overflow: auto;
-    }
+@media (min-width: 901px) {
+    .app-shell { flex-direction: row; align-items: stretch; padding: 18px; gap: 17px; }
+    .glass-nav { width: 246px; position: sticky; top: 18px; height: calc(100vh - 36px); overflow: auto; }
+}
+@media (prefers-reduced-transparency: reduce) {
+    .glass-nav, .glass-topbar, .content { background: #f1f2f4; }
 }
