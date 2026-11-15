@@ -4,9 +4,6 @@ using POPs.Shared.Models;
 
 namespace POPs.Application.Services;
 
-/// <summary>
-/// Сервис управления курсами.
-/// </summary>
 public class CourseService
 {
     private readonly ICourseRepository _courses;
@@ -80,10 +77,6 @@ public class CourseService
         await _unitOfWork.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Перевод студентов на следующий курс: создаёт/находит курс N+1
-    /// и переносит все группы текущего курса туда.
-    /// </summary>
     public async Task<string> PromoteStudentsAsync(int courseId)
     {
         var course = await _courses.GetByIdAsync(courseId, includeStudents: true);

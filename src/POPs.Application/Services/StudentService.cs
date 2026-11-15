@@ -4,9 +4,6 @@ using POPs.Shared.Models;
 
 namespace POPs.Application.Services;
 
-/// <summary>
-/// Сервис управления студентами (по диаграмме классов).
-/// </summary>
 public class StudentService
 {
     private readonly IStudentRepository _students;

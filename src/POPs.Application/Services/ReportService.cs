@@ -3,9 +3,6 @@ using POPs.Shared.Dtos;
 
 namespace POPs.Application.Services;
 
-/// <summary>
-/// Сервис отчётности (по диаграмме активности).
-/// </summary>
 public class ReportService
 {
     private readonly IStudentRepository _students;
@@ -48,10 +45,6 @@ public class ReportService
         return await _students.CountByCourseAsync(courseId);
     }
 
-    /// <summary>
-    /// Отчёт по группе — сценарий из диаграммы активности:
-    /// запросить данные группы → получить студентов → если есть — статистика, иначе пустой отчёт.
-    /// </summary>
     public async Task<GroupReportDto?> GetGroupStatisticsAsync(int groupId)
     {
         var group = await _groups.GetByIdAsync(groupId, includeDetails: true);
@@ -63,7 +56,6 @@ public class ReportService
 
         var students = group.Students.OrderBy(s => s.FullName).ToList();
 
-        // Ветка «Студенты есть?» из диаграммы активности
         if (students.Count == 0)
         {
             return new GroupReportDto

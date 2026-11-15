@@ -2,9 +2,6 @@ using POPs.Shared.Models;
 
 namespace POPs.Infrastructure.Data;
 
-/// <summary>
-/// Заполняет БД демо-данными при первом запуске.
-/// </summary>
 public static class DbSeeder
 {
     public static void Seed(AppDbContext db)

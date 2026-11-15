@@ -1,4 +1,3 @@
-# Одна команда для Windows: ставит .NET 8 при необходимости и запускает API + фронт.
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $LocalDotnet = Join-Path $Root ".dotnet"

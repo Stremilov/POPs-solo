@@ -3,9 +3,6 @@ using POPs.Shared.Dtos;
 
 namespace POPs.Application.Services;
 
-/// <summary>
-/// Простая аутентификация администратора и студента.
-/// </summary>
 public class AuthService
 {
     private readonly IAdministratorRepository _administrators;

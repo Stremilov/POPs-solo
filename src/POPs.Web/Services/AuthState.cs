@@ -2,9 +2,6 @@ using POPs.Shared.Dtos;
 
 namespace POPs.Web.Services;
 
-/// <summary>
-/// Хранит текущего пользователя в памяти браузера (простая сессия).
-/// </summary>
 public class AuthState
 {
     public bool IsAuthenticated => !string.IsNullOrEmpty(Role);

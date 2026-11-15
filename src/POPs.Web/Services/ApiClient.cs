@@ -3,9 +3,6 @@ using POPs.Shared.Dtos;
 
 namespace POPs.Web.Services;
 
-/// <summary>
-/// Простой клиент для обращения к API.
-/// </summary>
 public class ApiClient
 {
     private readonly HttpClient _http;
@@ -15,14 +12,12 @@ public class ApiClient
         _http = http;
     }
 
-    // ---- Auth ----
     public async Task<LoginResponse?> LoginAsync(LoginRequest request)
     {
         var response = await _http.PostAsJsonAsync("api/auth/login", request);
         return await response.Content.ReadFromJsonAsync<LoginResponse>();
     }
 
-    // ---- Students ----
     public Task<List<StudentDto>?> GetStudentsAsync(string? search = null)
     {
         var url = string.IsNullOrWhiteSpace(search)
@@ -64,7 +59,6 @@ public class ApiClient
         return await ReadResultAsync<StudentDto>(response);
     }
 
-    // ---- Groups ----
     public Task<List<GroupDto>?> GetGroupsAsync()
         => _http.GetFromJsonAsync<List<GroupDto>>("api/groups");
 
@@ -103,7 +97,6 @@ public class ApiClient
         return (false, await ReadErrorAsync(response));
     }
 
-    // ---- Courses ----
     public Task<List<CourseDto>?> GetCoursesAsync()
         => _http.GetFromJsonAsync<List<CourseDto>>("api/courses");
 
@@ -139,7 +132,6 @@ public class ApiClient
         return (true, payload?.Message ?? "Готово");
     }
 
-    // ---- Reports ----
     public Task<List<ContingentItemDto>?> GetContingentAsync()
         => _http.GetFromJsonAsync<List<ContingentItemDto>>("api/reports/contingent");
 
@@ -175,7 +167,6 @@ public class ApiClient
         }
         catch
         {
-            // ignore
         }
 
         return $"Ошибка HTTP {(int)response.StatusCode}";

@@ -1,8 +1,5 @@
 namespace POPs.Shared.Models;
 
-/// <summary>
-/// Студент — основная сущность предметной области.
-/// </summary>
 public class Student
 {
     public int Id { get; set; }
@@ -16,12 +13,9 @@ public class Student
     public string PreviousEducation { get; set; } = string.Empty;
     public int GraduationYear { get; set; }
 
-    /// <summary>Логин для входа студента в систему.</summary>
     public string Login { get; set; } = string.Empty;
 
-    /// <summary>Хэш пароля (не отдаём на клиент).</summary>
     public string PasswordHash { get; set; } = string.Empty;
 
-    // Навигация: студент обучается в одной группе
     public Group? Group { get; set; }
 }

@@ -1,8 +1,5 @@
 namespace POPs.Shared.Models;
 
-/// <summary>
-/// Администратор системы.
-/// </summary>
 public class Administrator
 {
     public Guid Id { get; set; }

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Одна команда для macOS / Linux: ставит .NET 8 при необходимости и запускает API + фронт.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"

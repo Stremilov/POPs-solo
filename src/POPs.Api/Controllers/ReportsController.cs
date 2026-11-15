@@ -35,7 +35,6 @@ public class ReportsController : ControllerBase
     public async Task<ActionResult<object>> CountByCourse(int courseId)
         => Ok(new { courseId, count = await _reportService.CountByCourseAsync(courseId) });
 
-    /// <summary>Отчёт по группе (диаграмма активности).</summary>
     [HttpGet("group/{groupId:int}")]
     public async Task<ActionResult<GroupReportDto>> GetGroupReport(int groupId)
     {

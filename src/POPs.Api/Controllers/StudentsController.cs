@@ -70,7 +70,6 @@ public class StudentsController : ControllerBase
         return result == null ? NotFound() : Ok(result);
     }
 
-    /// <summary>Прецедент «Внесение персональных данных» (студент).</summary>
     [HttpPut("{id:int}/personal")]
     public async Task<ActionResult<StudentDto>> UpdatePersonal(int id, [FromBody] PersonalDataRequest request)
     {

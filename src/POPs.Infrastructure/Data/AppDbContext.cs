@@ -16,14 +16,12 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Student * — 1 Group
         modelBuilder.Entity<Student>()
             .HasOne(s => s.Group)
             .WithMany(g => g.Students)
             .HasForeignKey(s => s.GroupId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Group * — 1 Course
         modelBuilder.Entity<Group>()
             .HasOne(g => g.Course)
             .WithMany(c => c.Groups)

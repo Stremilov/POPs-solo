@@ -279,7 +279,6 @@ select.form-select {
     .hero-banner { background: #39414c; }
 }
 
-/* Keep wide data tables inside the content panel on compact desktops. */
 .app-shell .content { min-width: 0; overflow-x: hidden; }
 @media (max-width: 1200px) {
     .table { display: block; max-width: 100%; overflow-x: auto; white-space: nowrap; }

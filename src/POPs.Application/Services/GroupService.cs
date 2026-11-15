@@ -4,9 +4,6 @@ using POPs.Shared.Models;
 
 namespace POPs.Application.Services;
 
-/// <summary>
-/// Сервис управления группами.
-/// </summary>
 public class GroupService
 {
     private readonly IGroupRepository _groups;
